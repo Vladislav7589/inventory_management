@@ -18,7 +18,13 @@ final selectDataFromTable = FutureProvider.family<List<List<dynamic>>?, String>(
 });
 
 final deleteDataFromTable = FutureProvider.family<void,List<String>>((ref, tableNameAndId) async {
-  var delete = ref.watch(postgresDatabaseProvider).deleteData(tableNameAndId[0],tableNameAndId[1]);
+  ref.watch(postgresDatabaseProvider).deleteData(tableNameAndId[0],tableNameAndId[1]);
   ref.refresh(selectDataFromTable(tableNameAndId[0]).future);
-  return delete;
+
+});
+
+final insertDataFromTable = FutureProvider.family<void,Map<String, dynamic>>((ref, tableNameAndId) async {
+  ref.watch(postgresDatabaseProvider).insertData(tableNameAndId[0],tableNameAndId[1]);
+  ref.refresh(selectDataFromTable(tableNameAndId[0]).future);
+
 });

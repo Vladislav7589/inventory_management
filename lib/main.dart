@@ -1,10 +1,14 @@
 import 'package:env_flutter/env_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:inventory_management/src/models/product.dart';
-import 'package:inventory_management/src/providers/postgres_crud.dart';
-import 'package:inventory_management/src/widgets/table_widget.dart';
-import 'package:postgres/postgres.dart';
+import 'package:inventory_management/src/models/products.dart';
+import 'package:inventory_management/src/widgets/employee_page.dart';
+import 'package:inventory_management/src/widgets/group_product_page.dart';
+
+import 'package:inventory_management/src/widgets/product_page.dart';
+import 'package:inventory_management/src/widgets/sales_page.dart';
+import 'package:inventory_management/src/widgets/suppliers_page.dart';
+
 
 Future<void> main() async {
   await dotenv.load();
@@ -43,54 +47,44 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Склад',style: TextStyle(fontWeight: FontWeight.bold),),
-      ),
-      body: Consumer(
-        builder: (_, WidgetRef ref, __) {
-          return RefreshIndicator(
-            onRefresh: () async {
-              return ref.refresh(selectDataFromTable('Товары').future);
-            },
-            child: SingleChildScrollView(
-              child: Container(
-                height: MediaQuery.of(context).size.height, // Устанавливаем ограничение по высоте
-                child: Column(
-                  children: [
-                    Divider(),
-                    const Text(
-                      'Товары',
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 30, // Размер шрифта заголовка
-                      ),
-                    ),
-                    Divider(),
-                    Expanded(
-                      child: Container(
-                        child: ref.watch(selectDataFromTable('Товары')).when(
-                        data: (data) {
-                            products = Products.fromListOfLists(data!).productList;
-                            return TableWidget(products: products);
-                          },
-                          error: (error, stack) => const Center(child: Text('Ошибка',style: TextStyle(fontSize: 30),)),
-                          loading: () => const Center(
-                          child: CircularProgressIndicator(
-                          color: Colors.red,
-                          ))
-
-                      ),
-                    ),
-                    )
-                  ],
-                ),
+    return DefaultTabController(
+      length: 5,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: const Text('Склад',style: TextStyle(fontWeight: FontWeight.bold),),
+          bottom: const TabBar(
+            isScrollable:true,
+            labelStyle:TextStyle(fontSize: 20,fontWeight: FontWeight.bold),
+            tabs: [
+              Tab(
+                text: "Товары",
               ),
-            ),
-          );
-        },
+              Tab(
+                text: "Продажи",
+              ),
+              Tab(
+                text: "Сотрудники",
+              ),
+              Tab(
+                text: "Поставщики",
+              ),
+              Tab(
+                text: "Группы товаров",
+              )
+            ],
+          ),
+        ),
+
+        body: const TabBarView(
+          children: [
+            ProductPage(),
+            SalesPage(),
+            EmployeePage(),
+            SuppliersPage(),
+            GroupProductPage()
+          ],
+        ),
       ),
     );
   }
