@@ -9,6 +9,7 @@ import 'package:inventory_management/src/widgets/product_page.dart';
 import 'package:inventory_management/src/widgets/sales_page.dart';
 import 'package:inventory_management/src/widgets/suppliers_page.dart';
 
+final navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   await dotenv.load();
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(

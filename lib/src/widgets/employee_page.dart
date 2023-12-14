@@ -87,7 +87,7 @@ class EmployeePage extends ConsumerWidget {
                                     DataCell(IconButton(
                                       icon: Icon(Icons.delete),
                                       onPressed: () {
-                                        ref.watch(deleteDataFromTable([tableName, employee.id]));
+                                          ref.watch(deleteDataFromTable([tableName, employee.id]));
                                       },
                                     ))
                                   ]);
