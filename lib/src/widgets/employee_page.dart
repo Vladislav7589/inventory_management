@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventory_management/src/models/employee.dart';
 import 'package:inventory_management/src/providers/postgres_crud.dart';
 
+import '../../main.dart';
 import '../models/products.dart';
 import 'buttom_sheet.dart';
 
@@ -69,34 +70,28 @@ class EmployeePage extends ConsumerWidget {
                                 ),
                                 columns: const [
                                   DataColumn(label: Text('ID'), numeric: true,),
-                                  DataColumn(label: Text('Имя')),
-                                  DataColumn(label: Text('Фамилия'), numeric: true),
+                                  DataColumn(label: Text('Фамилия')),
+                                  DataColumn(label: Text('Имя'), numeric: true),
                                   DataColumn(label: Text('Отчество'), numeric: true),
                                   DataColumn(label: Text('Должность'), numeric: true),
                                   DataColumn(label: Text('Телефон'), numeric: true),
-                                  DataColumn(label: Text('')),
+
                                   DataColumn(label: Text('')),
                                 ],
                                 rows: employees.map((employee) {
                                   return DataRow(cells: [
                                     DataCell(Text(employee.id)),
-                                    DataCell(Text(employee.first_name)),
-                                    DataCell(Text(employee.second_name)),
-                                    DataCell(Text(employee.third_name)),
-                                    DataCell(Text(employee.post)),
-                                    DataCell(Text(employee.number_phone)),
+                                    dataCell(tableName, 'Фамилия', employee.first_name, employee.id, ref),
+                                    dataCell(tableName, 'Имя', employee.second_name, employee.id, ref),
+                                    dataCell(tableName, 'Отчество', employee.third_name, employee.id, ref),
+                                    dataCell(tableName, 'Должность', employee.post, employee.id, ref),
+                                    dataCell(tableName, 'Телефон', employee.number_phone, employee.id, ref),
                                     DataCell(IconButton(
                                       icon: Icon(Icons.delete),
                                       onPressed: () {
-                                          ref.watch(deleteDataFromTable([tableName, employee.id]));
+                                        ref.watch(deleteDataFromTable([tableName, employee.id]));
                                       },
                                     )),
-                                    DataCell(IconButton(
-                                      icon: Icon(Icons.edit),
-                                      onPressed: () {
-
-                                      },
-                                    ))
                                   ]);
                                 }).toList(),
                               ),

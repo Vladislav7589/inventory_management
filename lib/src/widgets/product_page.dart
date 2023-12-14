@@ -80,11 +80,11 @@ class ProductPage extends ConsumerWidget {
                                 rows: products.map((product) {
                                   return DataRow(cells: [
                                     DataCell(Text(product.id)),
-                                    DataCell(Text(product.name)),
-                                    DataCell(Text(product.quantity)),
-                                    DataCell(Text(product.productType)),
-                                    DataCell(Text(product.price)),
-                                    DataCell(Text(product.supplierCode)),
+                                    dataCell(tableName, 'Наименование', product.name, product.id, ref),
+                                    dataCell(tableName, 'Количество', product.quantity, product.id, ref),
+                                    dataCell(tableName, 'Тип_товара', product.productType, product.id, ref),
+                                    dataCell(tableName, 'Цена', product.price, product.id, ref),
+                                    dataCell(tableName, 'Код_поставщика', product.supplierCode, product.id, ref),
                                     DataCell(IconButton(
                                       icon: const Icon(Icons.delete),
                                       onPressed: () {

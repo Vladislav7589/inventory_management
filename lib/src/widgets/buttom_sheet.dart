@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventory_management/src/providers/postgres_crud.dart';
 
+import '../../main.dart';
 import 'buttom_sheets/employee.dart';
 import 'buttom_sheets/groups.dart';
 import 'buttom_sheets/products.dart';
@@ -20,7 +21,7 @@ Widget chooseWidgetBasedOnVariable(String value) {
 }
 class BottomSheet extends StatelessWidget {
   final String tableName;
-  const BottomSheet({super.key, required this.tableName, });
+  const BottomSheet({super.key, required this.tableName });
 
   @override
   Widget build(BuildContext context) {
@@ -77,12 +78,52 @@ void showBottom(BuildContext ctx,String tableName) {
                     color: Colors.black26,
                   ),
                 ),
-                BottomSheet(tableName: tableName,)
+                BottomSheet(tableName: tableName)
               ],
             ),
           ],
         ),
       ),
     ),
+  );
+}
+DataCell dataCell(String tableName, String column, String currentValue, String id, WidgetRef ref){
+  return  DataCell(
+    Text(currentValue),
+    showEditIcon: true,
+    onTap: () {
+      showDialog(
+        context: navigatorKey.currentContext!,
+        builder: (context) {
+          TextEditingController textFieldController = TextEditingController(text: currentValue);
+
+          return AlertDialog(
+            title: const Text('Изменить:'),
+            content: TextField(
+              controller: textFieldController,
+              decoration: const InputDecoration(
+                hintText: 'Введите новое значение',
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  // Вызов провайдера для обновления данных
+                  ref.read(updateDataFromTable([tableName, column , textFieldController.text,id]));
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Изменить'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Отмена'),
+              ),
+            ],
+          );
+        },
+      );
+    },
   );
 }

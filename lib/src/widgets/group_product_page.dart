@@ -73,11 +73,12 @@ class GroupProductPage extends ConsumerWidget {
                                   ),
                                   DataColumn(label: Text('Характеристика')),
                                   DataColumn(label: Text(''), numeric: true),
+
                                 ],
                                 rows: groupsProducts.map((groupProduct) {
                                   return DataRow(cells: [
                                     DataCell(Text(groupProduct.id)),
-                                    DataCell(Text(groupProduct.property)),
+                                    dataCell(tableName, 'Характеристика', groupProduct.property, groupProduct.id, ref),
                                     DataCell(IconButton(
                                       icon: const Icon(Icons.delete),
                                       onPressed: () {

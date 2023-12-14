@@ -80,10 +80,10 @@ class SalesPage extends ConsumerWidget {
                                 rows: sales.map((sale) {
                                   return DataRow(cells: [
                                     DataCell(Text(sale.id)),
-                                    DataCell(Text(sale.data_time)),
-                                    DataCell(Text(sale.code_employee)),
-                                    DataCell(Text(sale.code_product)),
-                                    DataCell(Text(sale.count)),
+                                    dataCell(tableName, 'Дата', sale.data_time, sale.id, ref),
+                                    dataCell(tableName, 'Код_сотрудника', sale.code_employee, sale.id, ref),
+                                    dataCell(tableName, 'Код_товара', sale.code_product, sale.id, ref),
+                                    dataCell(tableName, 'Количество', sale.count, sale.id, ref),
                                     DataCell(IconButton(
                                       icon: const Icon(Icons.delete),
                                       onPressed: () {

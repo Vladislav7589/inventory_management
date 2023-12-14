@@ -44,6 +44,51 @@ final deleteDataFromTable = FutureProvider.family<void, List<String>>((ref, tabl
 });
 
 final insertDataFromTable = FutureProvider.family<void, List<dynamic>>((ref, tableNameAndData) async {
-  ref.watch(postgresDatabaseProvider).insertData(tableNameAndData[0], tableNameAndData[1] as Map<String, dynamic>);
+try {
+  ref.watch(postgresDatabaseProvider).insertData(
+      tableNameAndData[0], tableNameAndData[1] as Map<String, dynamic>);
   ref.refresh(selectDataFromTable(tableNameAndData[0]).future);
+} catch (error) {
+  showDialog(
+    context: navigatorKey.currentContext!,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Ошибка добавления:'),
+        content: Text('$error'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('ОК'),
+          ),
+        ],
+      );
+    },
+  );
+}
+});
+final updateDataFromTable = FutureProvider.family<void, List<dynamic>>((ref, tableColumnId) async {
+  try {
+    ref.watch(postgresDatabaseProvider).updateData(tableColumnId[0], tableColumnId[1],tableColumnId[2],tableColumnId[3]);
+    ref.refresh(selectDataFromTable(tableColumnId[0]).future);
+  } catch (error) {
+    showDialog(
+      context: navigatorKey.currentContext!,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Ошибка обновления:'),
+          content: Text('$error'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('ОК'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 });

@@ -43,4 +43,8 @@ class PostgresDatabase {
     };*/
     await connection?.execute(Sql.named('INSERT INTO $tableName ($columns) VALUES ($values)'));
   }
+  Future<void> updateData(String tableName, String column,String value, String id) async {
+
+    await connection?.execute(Sql.named("UPDATE $tableName SET $column='$value' WHERE id=$id"));
+  }
 }

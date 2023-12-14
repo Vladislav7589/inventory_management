@@ -7,7 +7,7 @@ import '../buttom_sheet.dart';
 class BottomSheetEmployees extends ConsumerStatefulWidget {
   final String tableName;
 
-  const BottomSheetEmployees(this.tableName, {Key? key}) : super(key: key);
+  const BottomSheetEmployees(this.tableName,  {Key? key}) : super(key: key);
 
   @override
   ConsumerState createState() => _BottomSheetEmployeesState();

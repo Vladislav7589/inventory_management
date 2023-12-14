@@ -76,13 +76,14 @@ class SuppliersPage extends ConsumerWidget {
                                   DataColumn(label: Text('Адрес'), numeric: true),
                                   DataColumn(label: Text('Почта'), numeric: true),
                                   DataColumn(label: Text(''), numeric: true),
+
                                 ],
                                 rows: suppliers.map((supplier) {
                                   return DataRow(cells: [
                                     DataCell(Text(supplier.id)),
-                                    DataCell(Text(supplier.name)),
-                                    DataCell(Text(supplier.address)),
-                                    DataCell(Text(supplier.email)),
+                                    dataCell(tableName, 'Название', supplier.name, supplier.id, ref),
+                                    dataCell(tableName, 'Адрес', supplier.address, supplier.id, ref),
+                                    dataCell(tableName, 'Почта', supplier.email, supplier.id, ref),
                                     DataCell(IconButton(
                                       icon: const Icon(Icons.delete),
                                       onPressed: () {
