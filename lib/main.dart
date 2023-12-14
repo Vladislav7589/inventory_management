@@ -1,12 +1,14 @@
 import 'package:env_flutter/env_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inventory_management/src/models/product.dart';
+import 'package:inventory_management/src/providers/postgres_crud.dart';
 import 'package:inventory_management/src/widgets/table_widget.dart';
 import 'package:postgres/postgres.dart';
 
 Future<void> main() async {
   await dotenv.load();
-  runApp(const MyApp());
+  runApp(const  ProviderScope(child: MyApp(),));
 }
 
 class MyApp extends StatelessWidget {
@@ -38,70 +40,57 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<Product> products = [];
-
-  Future<List<List<dynamic>>> fetchDataFromDB() async {
-    final connection = await Connection.open(
-      Endpoint(
-        host: '192.168.0.103',
-        database: 'складской_учет',
-        username: 'postgres',
-        password: dotenv.env['password']!,
-      ),
-      // The postgres server hosted locally doesn't have SSL by default. If you're
-      // accessing a postgres server over the Internet, the server should support
-      // SSL and you should swap out the mode with `SslMode.verifyFull`.
-      settings: const ConnectionSettings(sslMode: SslMode.disable),
-    );
-
-    try {
-      final results =
-          await connection.execute(Sql.named('SELECT * FROM Товары'));
-      return results;
-    } catch (e) {
-      return [];
-    } finally {
-      await connection.close();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Склад'),
+        title: const Text('Склад',style: TextStyle(fontWeight: FontWeight.bold),),
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          // Загрузка данных из базы данных
-          final data = await fetchDataFromDB();
-          setState(() {
-            // Обновление списка products
-            products = Products.fromListOfLists(data).productList;
-          });
-        },
-        child: SingleChildScrollView(
-          child: Container(
-            height: MediaQuery.of(context).size.height, // Устанавливаем ограничение по высоте
-            child: Column(
-              children: [
-                const Text(
-                  'Товары',
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 25, // Размер шрифта заголовка
-                  ),
+      body: Consumer(
+        builder: (_, WidgetRef ref, __) {
+          return RefreshIndicator(
+            onRefresh: () async {
+              return ref.refresh(selectDataFromTable('Товары').future);
+            },
+            child: SingleChildScrollView(
+              child: Container(
+                height: MediaQuery.of(context).size.height, // Устанавливаем ограничение по высоте
+                child: Column(
+                  children: [
+                    Divider(),
+                    const Text(
+                      'Товары',
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30, // Размер шрифта заголовка
+                      ),
+                    ),
+                    Divider(),
+                    Expanded(
+                      child: Container(
+                        child: ref.watch(selectDataFromTable('Товары')).when(
+                        data: (data) {
+                            products = Products.fromListOfLists(data!).productList;
+                            return TableWidget(products: products);
+                          },
+                          error: (error, stack) => const Center(child: Text('Ошибка',style: TextStyle(fontSize: 30),)),
+                          loading: () => const Center(
+                          child: CircularProgressIndicator(
+                          color: Colors.red,
+                          ))
+
+                      ),
+                    ),
+                    )
+                  ],
                 ),
-                Expanded(
-                  child: Container(
-                    child: TableWigget(products: products),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
