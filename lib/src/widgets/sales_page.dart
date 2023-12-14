@@ -39,7 +39,7 @@ class SalesPage extends ConsumerWidget {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            showBottom(context);
+                            showBottom(context,tableName);
                           },
                           child: const Text('Добавить'),
                         ),

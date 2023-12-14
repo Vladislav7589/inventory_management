@@ -40,7 +40,7 @@ class SuppliersPage extends ConsumerWidget {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            showBottom(context);
+                            showBottom(context,tableName);
                           },
                           child: Text('Добавить'),
                         ),

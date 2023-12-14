@@ -40,7 +40,7 @@ class EmployeePage extends ConsumerWidget {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            showBottom(context);
+                            showBottom(context,tableName);
                           },
                           child: Text('Добавить'),
                         ),
@@ -74,7 +74,8 @@ class EmployeePage extends ConsumerWidget {
                                   DataColumn(label: Text('Отчество'), numeric: true),
                                   DataColumn(label: Text('Должность'), numeric: true),
                                   DataColumn(label: Text('Телефон'), numeric: true),
-                                  DataColumn(label: Text(''), numeric: true),
+                                  DataColumn(label: Text('')),
+                                  DataColumn(label: Text('')),
                                 ],
                                 rows: employees.map((employee) {
                                   return DataRow(cells: [
@@ -88,6 +89,12 @@ class EmployeePage extends ConsumerWidget {
                                       icon: Icon(Icons.delete),
                                       onPressed: () {
                                           ref.watch(deleteDataFromTable([tableName, employee.id]));
+                                      },
+                                    )),
+                                    DataCell(IconButton(
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () {
+
                                       },
                                     ))
                                   ]);
