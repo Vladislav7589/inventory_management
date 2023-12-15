@@ -6,6 +6,7 @@ import 'package:inventory_management/src/widgets/employee_page.dart';
 import 'package:inventory_management/src/widgets/group_product_page.dart';
 
 import 'package:inventory_management/src/widgets/product_page.dart';
+import 'package:inventory_management/src/widgets/remains_page.dart';
 import 'package:inventory_management/src/widgets/sales_page.dart';
 import 'package:inventory_management/src/widgets/suppliers_page.dart';
 
@@ -52,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
 
     return DefaultTabController(
-      length: 5,
+      length: 6,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -61,6 +62,9 @@ class _MyHomePageState extends State<MyHomePage> {
             isScrollable:true,
             labelStyle:TextStyle(fontSize: 20,fontWeight: FontWeight.bold),
             tabs: [
+              Tab(
+                text: "Остаток",
+              ),
               Tab(
                 text: "Товары",
               ),
@@ -75,13 +79,15 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               Tab(
                 text: "Группы товаров",
-              )
+              ),
+
             ],
           ),
         ),
 
         body: const TabBarView(
           children: [
+            RemainsPage(),
             ProductPage(),
             SalesPage(),
             EmployeePage(),
