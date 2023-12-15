@@ -9,11 +9,16 @@ final postgresDatabaseProvider = Provider<PostgresDatabase>(
 );
 
 final selectDataFromTable = FutureProvider.family<List<List<dynamic>>?, String>((ref, tableName) async {
+try {
   final postgresDatabase = ref.watch(postgresDatabaseProvider);
   if (postgresDatabase.connection == null) {
     await postgresDatabase.connectToPostgres();
   }
   return await postgresDatabase.getAllFromTable(tableName);
+} catch (error) {
+  scaffoldKey.currentState?.showSnackBar(showSnackBar("$error"));
+  // Обработка ошибки удаления данных
+}
 });
 
 final deleteDataFromTable = FutureProvider.family<void, List<String>>((ref, tableNameAndId) async {
@@ -22,73 +27,25 @@ final deleteDataFromTable = FutureProvider.family<void, List<String>>((ref, tabl
     // Обновляем только данные таблицы после удаления записи
     await ref.read(selectDataFromTable(tableNameAndId[0]).future);
   } catch (error) {
-    showDialog(
-      context: navigatorKey.currentContext!,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Ошибка удаления:'),
-          content: Text('$error'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('ОК'),
-            ),
-          ],
-        );
-      },
-    );
+    scaffoldKey.currentState?.showSnackBar(showSnackBar("$error"));
     // Обработка ошибки удаления данных
   }
 });
 
 final insertDataFromTable = FutureProvider.family<void, List<dynamic>>((ref, tableNameAndData) async {
 try {
-  ref.watch(postgresDatabaseProvider).insertData(
+   await ref.watch(postgresDatabaseProvider).insertData(
       tableNameAndData[0], tableNameAndData[1] as Map<String, dynamic>);
-  ref.refresh(selectDataFromTable(tableNameAndData[0]).future);
+   await ref.refresh(selectDataFromTable(tableNameAndData[0]).future);
 } catch (error) {
-  showDialog(
-    context: navigatorKey.currentContext!,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('Ошибка добавления:'),
-        content: Text('$error'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('ОК'),
-          ),
-        ],
-      );
-    },
-  );
+  scaffoldKey.currentState?.showSnackBar(showSnackBar("$error"));
 }
 });
 final updateDataFromTable = FutureProvider.family<void, List<dynamic>>((ref, tableColumnId) async {
   try {
-    ref.watch(postgresDatabaseProvider).updateData(tableColumnId[0], tableColumnId[1],tableColumnId[2],tableColumnId[3]);
-    ref.refresh(selectDataFromTable(tableColumnId[0]).future);
+    await ref.watch(postgresDatabaseProvider).updateData(tableColumnId[0], tableColumnId[1],tableColumnId[2],tableColumnId[3]);
+    await ref.refresh(selectDataFromTable(tableColumnId[0]).future);
   } catch (error) {
-    showDialog(
-      context: navigatorKey.currentContext!,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Ошибка обновления:'),
-          content: Text('$error'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('ОК'),
-            ),
-          ],
-        );
-      },
-    );
+    scaffoldKey.currentState?.showSnackBar(showSnackBar("$error"));
   }
 });

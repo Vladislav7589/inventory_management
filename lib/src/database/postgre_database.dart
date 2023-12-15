@@ -33,7 +33,7 @@ class PostgresDatabase {
       return value;
     }).join(', ');
     print(values);
-
+    print(columns);
 /*    data = {
       'Наименование': 'Футбольный мяч',
       'Количество': 10,

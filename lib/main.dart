@@ -10,6 +10,7 @@ import 'package:inventory_management/src/widgets/sales_page.dart';
 import 'package:inventory_management/src/widgets/suppliers_page.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
+final scaffoldKey = GlobalKey<ScaffoldMessengerState>();
 
 Future<void> main() async {
   await dotenv.load();
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: navigatorKey,
+      scaffoldMessengerKey: scaffoldKey,
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -90,4 +92,18 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+}
+
+SnackBar showSnackBar(String message){
+  return SnackBar(
+    content:  Text('Ошибка:\n${message}',style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+    duration: const Duration(seconds: 10),
+    backgroundColor: Colors.redAccent,
+
+    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+    behavior: SnackBarBehavior.floating,
+
+    margin: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30),
+    padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10),
+  );
 }
