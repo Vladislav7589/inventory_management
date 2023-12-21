@@ -1,12 +1,21 @@
 import 'package:env_flutter/env_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:inventory_management/src/models/product.dart';
-import 'package:inventory_management/src/widgets/table_widget.dart';
-import 'package:postgres/postgres.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:inventory_management/src/models/products.dart';
+import 'package:inventory_management/src/widgets/employee_page.dart';
+import 'package:inventory_management/src/widgets/group_product_page.dart';
+
+import 'package:inventory_management/src/widgets/product_page.dart';
+import 'package:inventory_management/src/widgets/remains_page.dart';
+import 'package:inventory_management/src/widgets/sales_page.dart';
+import 'package:inventory_management/src/widgets/suppliers_page.dart';
+
+final navigatorKey = GlobalKey<NavigatorState>();
+final scaffoldKey = GlobalKey<ScaffoldMessengerState>();
 
 Future<void> main() async {
   await dotenv.load();
-  runApp(const MyApp());
+  runApp(const  ProviderScope(child: MyApp(),));
 }
 
 class MyApp extends StatelessWidget {
@@ -15,6 +24,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
+      scaffoldMessengerKey: scaffoldKey,
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -38,71 +49,67 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<Product> products = [];
-
-  Future<List<List<dynamic>>> fetchDataFromDB() async {
-    final connection = await Connection.open(
-      Endpoint(
-        host: '192.168.0.103',
-        database: 'складской_учет',
-        username: 'postgres',
-        password: dotenv.env['password']!,
-      ),
-      // The postgres server hosted locally doesn't have SSL by default. If you're
-      // accessing a postgres server over the Internet, the server should support
-      // SSL and you should swap out the mode with `SslMode.verifyFull`.
-      settings: const ConnectionSettings(sslMode: SslMode.disable),
-    );
-
-    try {
-      final results =
-          await connection.execute(Sql.named('SELECT * FROM Товары'));
-      return results;
-    } catch (e) {
-      return [];
-    } finally {
-      await connection.close();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Склад'),
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          // Загрузка данных из базы данных
-          final data = await fetchDataFromDB();
-          setState(() {
-            // Обновление списка products
-            products = Products.fromListOfLists(data).productList;
-          });
-        },
-        child: SingleChildScrollView(
-          child: Container(
-            height: MediaQuery.of(context).size.height, // Устанавливаем ограничение по высоте
-            child: Column(
-              children: [
-                const Text(
-                  'Товары',
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 25, // Размер шрифта заголовка
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    child: TableWigget(products: products),
-                  ),
-                ),
-              ],
-            ),
+
+    return DefaultTabController(
+      length: 6,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: const Text('Склад',style: TextStyle(fontWeight: FontWeight.bold),),
+          bottom: const TabBar(
+            isScrollable:true,
+            labelStyle:TextStyle(fontSize: 20,fontWeight: FontWeight.bold),
+            tabs: [
+              Tab(
+                text: "Остаток",
+              ),
+              Tab(
+                text: "Товары",
+              ),
+              Tab(
+                text: "Продажи",
+              ),
+              Tab(
+                text: "Сотрудники",
+              ),
+              Tab(
+                text: "Поставщики",
+              ),
+              Tab(
+                text: "Группы товаров",
+              ),
+
+            ],
           ),
+        ),
+
+        body: const TabBarView(
+          children: [
+            RemainsPage(),
+            ProductPage(),
+            SalesPage(),
+            EmployeePage(),
+            SuppliersPage(),
+            GroupProductPage()
+          ],
         ),
       ),
     );
   }
+}
+
+SnackBar showSnackBar(String message){
+  return SnackBar(
+    content:  Text('Ошибка:\n${message}',style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+    duration: const Duration(seconds: 10),
+    backgroundColor: Colors.redAccent,
+
+    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+    behavior: SnackBarBehavior.floating,
+
+    margin: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 30),
+    padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10),
+  );
 }
